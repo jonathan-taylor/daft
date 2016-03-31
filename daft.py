@@ -176,7 +176,8 @@ class Node(object):
     """
     def __init__(self, name, content, x, y, scale=1, aspect=None,
                  observed=False, fixed=False,
-                 offset=[0, 0], plot_params={}, label_params=None):
+                 offset=[0, 0], plot_params={}, label_params=None,
+                 observed_style=None):
         # Node style.
         assert not (observed and fixed), \
             "A node cannot be both 'observed' and 'fixed'."
@@ -203,6 +204,8 @@ class Node(object):
             self.label_params = dict(label_params)
         else:
             self.label_params = None
+
+        self.observed_style = observed_style
 
     def render(self, ctx):
         """
@@ -257,17 +260,20 @@ class Node(object):
             aspect = ctx.aspect
 
         # Set up an observed node. Note the fc INSANITY.
+        observed_style = self.observed_style or ctx.observed_style
+
         if self.observed:
+
             # Update the plotting parameters depending on the style of
             # observed node.
             h = float(diameter)
             w = aspect * float(diameter)
-            if ctx.observed_style == "shaded":
+            if observed_style == "shaded":
                 p["fc"] = "0.7"
-            elif ctx.observed_style == "outer":
+            elif observed_style == "outer":
                 h = diameter + 0.1 * diameter
                 w = aspect * diameter + 0.1 * diameter
-            elif ctx.observed_style == "inner":
+            elif observed_style == "inner":
                 h = diameter - 0.1 * diameter
                 w = aspect * diameter - 0.1 * diameter
                 p["fc"] = fc
@@ -281,7 +287,7 @@ class Node(object):
             p["fc"] = fc
 
         # Draw the foreground ellipse.
-        if ctx.observed_style == "inner" and not self.fixed:
+        if observed_style == "inner" and not self.fixed:
             p["fc"] = "none"
         el = Ellipse(xy=ctx.convert(self.x, self.y),
                      width=diameter * aspect, height=diameter, **p)
