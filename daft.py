@@ -54,7 +54,7 @@ class PGM(object):
                  observed_style="shaded",
                  line_width=1, node_ec="k",
                  directed=True, aspect=1.0,
-                 label_params={}):
+                 label_params={}, figure=None):
         self._nodes = {}
         self._edges = []
         self._plates = []
@@ -66,7 +66,8 @@ class PGM(object):
                                        line_width=line_width,
                                        node_ec=node_ec, directed=directed,
                                        aspect=aspect,
-                                       label_params=label_params)
+                                       label_params=label_params,
+                                       figure=figure)
 
     def add_node(self, node):
         """
@@ -533,7 +534,7 @@ class _rendering_context(object):
         Default node label parameters.
 
     """
-    def __init__(self, **kwargs):
+    def __init__(self, figure=None, **kwargs):
         # Save the style defaults.
         self.line_width = kwargs.get("line_width", 1.0)
 
@@ -558,7 +559,7 @@ class _rendering_context(object):
         self.label_params = dict(kwargs.get("label_params", {}))
 
         # Initialize the figure to ``None`` to handle caching later.
-        self._figure = None
+        self._figure = figure
         self._ax = None
 
     def figure(self):
